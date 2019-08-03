@@ -1,1 +1,1 @@
-from scrapers.sreality import SReality
+from scrapers.seznamreality import SeznamReality
