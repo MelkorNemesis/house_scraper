@@ -1,4 +1,5 @@
 import unicodedata
+from typing import AsyncGenerator
 import pyppeteer
 from scrapers.base import Base
 from pyquery import PyQuery as pq
@@ -13,7 +14,7 @@ class SeznamReality(Base):
     def host(self):
         return "https://sreality.cz"
 
-    async def get_items(self):
+    async def get_items(self) -> AsyncGenerator[Property, None]:
         """ Yield all houses to caller """
         browser = await pyppeteer.launch()
         page = await browser.newPage()
