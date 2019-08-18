@@ -1,9 +1,9 @@
 import unicodedata
 from typing import AsyncGenerator
 import pyppeteer
-from scrapers.base import Base
+from scraper.scrapers.base import Base
 from pyquery import PyQuery as pq
-from property import Property
+from scraper.property import Property
 
 
 class IdnesReality(Base):
@@ -11,7 +11,7 @@ class IdnesReality(Base):
     PROPERTY_SELECTOR = '.c-list-products article.c-list-products__item'
 
     @property
-    def host(self):
+    def hostname(self):
         return "https://reality.idnes.cz"
 
     async def get_items(self) -> AsyncGenerator[Property, None]:
@@ -36,10 +36,8 @@ class IdnesReality(Base):
         await page.waitForSelector(self.PROPERTY_LIST_SELECTOR)
         html = await page.content()
 
-        items = pq(html).find(self.PROPERTY_SELECTOR)
-        if len(items):
-            for item in items:
-                yield item
+        for item in pq(html).find(self.PROPERTY_SELECTOR):
+            yield item
 
     def get_links_from_html(self, html):
         """ Get all pagination links and return a list """
@@ -61,7 +59,7 @@ class IdnesReality(Base):
 
         # link
         link = pq(item).find('.c-list-products__link').attr('href')
-        link = f'{self.host}{link}'
+        link = f'{self.hostname}{link}'
 
         # locality
         locality = pq(item).find('.c-list-products__info').text()

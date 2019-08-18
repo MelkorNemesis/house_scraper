@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="HousesList">
+    {% for house in houses %}
+    <div class="HousesList__item{% if house.is_stale %} HousesList__item--stale{% endif %}">
+        <small class="HousesList__item__ago">Přidáno: {{ house.created_ago }}, Poslední kontrola: {{
+            house.last_checked_ago }}
+        </small>
+        <div class="HousesList__item__images">
+            {% for src in house.images %}
+            <img class="HousesList__item__image" width="200" src="{{ src }}"/>
+            {% endfor %}
+        </div>
+        <strong><a class="HousesList__item__name" href="{{ house.link }}">{{ house.name }}</a></strong>
+        <div class="HousesList__item__locality">{{ house.locality }}</div>
+        <div class="HousesList__item__price">{{ house.price }}</div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+

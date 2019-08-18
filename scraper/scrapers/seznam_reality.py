@@ -1,9 +1,9 @@
 import unicodedata
 from typing import AsyncGenerator
 import pyppeteer
-from scrapers.base import Base
+from scraper.scrapers.base import Base
 from pyquery import PyQuery as pq
-from property import Property
+from scraper.property import Property
 
 
 class SeznamReality(Base):
@@ -11,7 +11,7 @@ class SeznamReality(Base):
     PROPERTY_SELECTOR = '.dir-property-list .property'
 
     @property
-    def host(self):
+    def hostname(self):
         return "https://sreality.cz"
 
     async def get_items(self) -> AsyncGenerator[Property, None]:
@@ -36,9 +36,13 @@ class SeznamReality(Base):
         await page.waitForSelector(self.PROPERTY_LIST_SELECTOR)
         html = await page.content()
 
-        items = pq(html).find(self.PROPERTY_SELECTOR)
-        if len(items):
-            for item in items:
+        for item in pq(html).find(self.PROPERTY_SELECTOR):
+            """
+            Item with .region-tip does not match user search criteria
+            so we omit such item
+            """
+            region_tip_label = pq(item).find('.tip-region')
+            if len(region_tip_label) == 0:
                 yield item
 
     def get_links_from_html(self, html):
@@ -54,7 +58,7 @@ class SeznamReality(Base):
 
         # link
         link = pq(item).find('h2 a').attr('href')
-        link = f'{self.host}{link}'
+        link = f'{self.hostname}{link}'
 
         # locality
         locality = pq(item).find('span.locality').text()
